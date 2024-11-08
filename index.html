@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Colorization</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input[type="file"] { margin: 20px 0; }
+        img { max-width: 100%; height: auto; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Image Colorization App</h1>
+    <p>Upload a grayscale image to see it colorized!</p>
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="uploadImage()">Colorize</button>
+    <br>
+    <h2>Original Image:</h2>
+    <img id="originalImage" src="" alt="Original Image">
+    <h2>Colorized Image:</h2>
+    <img id="colorizedImage" src="" alt="Colorized Image">
+    <script>
+        function uploadImage() {
+            const fileInput = document.getElementById("fileInput");
+            const originalImage = document.getElementById("originalImage");
+            const colorizedImage = document.getElementById("colorizedImage");
+            if (!fileInput.files[0]) {
+                alert("Please select an image to colorize.");
+                return;
+            }
+
+            // Show the original image
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                originalImage.src = e.target.result;
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+
+            // Prepare the file for upload
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            // Send image to backend for colorization
+            fetch("<YOUR_BACKEND_FUNCTION_URL>", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // Display the colorized image
+                const url = URL.createObjectURL(blob);
+                colorizedImage.src = url;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Failed to colorize the image.");
+            });
+        }
+    </script>
+</body>
+</html>
